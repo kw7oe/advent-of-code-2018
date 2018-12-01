@@ -1,25 +1,32 @@
-accumulate_frequencies = fn (frequencies, initial, past_frequencies) ->
-  frequencies
-  |> Enum.reduce_while({initial, past_frequencies}, fn (x, {acc, appeared_frequencies})  ->
-    new_frequency = x + acc
+defmodule Finder do
 
-    if Enum.member?(appeared_frequencies, new_frequency) do
-      {:halt, new_frequency}
+  def is_duplicate?(frequency, appeared_frequencies) do
+    if Enum.member?(appeared_frequencies, frequency) do
+      {:halt, frequency}
     else
-      appeared_frequencies = [ new_frequency | appeared_frequencies ]
-      {:cont, {new_frequency, appeared_frequencies}}
+      appeared_frequencies = [ frequency | appeared_frequencies ]
+      {:cont, {frequency, appeared_frequencies}}
     end
+  end
 
-  end)
-end
+  def accumulate_and_find(frequencies, initial, past_frequencies) do
+    frequencies
+    |> Enum.reduce_while({initial, past_frequencies},
+      fn (x, {prev_frequency, appeared_frequencies})  ->
+        new_frequency = x + prev_frequency
+        is_duplicate?(new_frequency, appeared_frequencies)
+      end)
+  end
 
-find_first_duplicate_frequency = fn (func, frequencies, initial, past_frequencies) ->
-  case accumulate_frequencies.(frequencies, initial, past_frequencies) do
-    {result, appeared_frequencies} ->
-      func.(func, frequencies, result, appeared_frequencies)
-    result -> result
+  def find_first_duplicate_frequency(frequencies, initial, past_frequencies) do
+    case accumulate_and_find(frequencies, initial, past_frequencies) do
+      {result, appeared_frequencies} ->
+        find_first_duplicate_frequency(frequencies, result, appeared_frequencies)
+      result -> result
+    end
   end
 end
+
 
 case File.read("input.txt") do
   {:ok, content} ->
@@ -27,6 +34,7 @@ case File.read("input.txt") do
                   |> String.split()
                   |> Enum.map(&String.to_integer/1)
 
-                  find_first_duplicate_frequency.(find_first_duplicate_frequency, frequencies, 0, [0]) |> IO.inspect
+    Finder.find_first_duplicate_frequency(frequencies, 0, [0])
+    |> IO.inspect
   {:error, _} -> IO.puts "Error opening files"
 end
