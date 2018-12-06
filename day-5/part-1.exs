@@ -1,12 +1,13 @@
 defmodule Day5 do
-
   def solve(string) do
-    codepoints = String.codepoints(String.trim_trailing(string))
-                 |> IO.inspect
+    codepoints =
+      String.codepoints(String.trim_trailing(string))
+      |> IO.inspect()
+
     reduce(codepoints)
-    |> IO.inspect
-    |> Enum.count
-    |> IO.inspect
+    |> IO.inspect()
+    |> Enum.count()
+    |> IO.inspect()
   end
 
   def reduce(codepoints) do
@@ -14,15 +15,14 @@ defmodule Day5 do
   end
 
   defp reduce([head | tail], []) do
-    reduce(tail, [ head ])
+    reduce(tail, [head])
   end
-
 
   defp reduce([head | tail], [result_head | result_tail]) do
     if react?(head, result_head) do
-     reduce(tail, result_tail)
-   else
-     reduce(tail, [ head, result_head | result_tail ])
+      reduce(tail, result_tail)
+    else
+      reduce(tail, [head, result_head | result_tail])
     end
   end
 
@@ -38,7 +38,7 @@ defmodule Day5 do
   # end
 
   defp reduce([head | []], result) do
-    [ head | result ]
+    [head | result]
   end
 
   defp reduce([], result) do
@@ -59,8 +59,8 @@ defmodule Day5 do
   # end
 
   defp react?(char1, char2) do
-    (String.downcase(char1) == char2 || String.downcase(char2) == char1)
-    && (String.upcase(char1) == char2 || String.upcase(char2) == char1)
+    (String.downcase(char1) == char2 || String.downcase(char2) == char1) &&
+      (String.upcase(char1) == char2 || String.upcase(char2) == char1)
   end
 end
 
@@ -71,4 +71,4 @@ end
 # |> IO.inspect
 
 File.read!("input.txt")
-|> Day5.solve
+|> Day5.solve()

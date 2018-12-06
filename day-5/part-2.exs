@@ -1,15 +1,15 @@
 defmodule Day5 do
-
   def solve(string) do
     codepoints = String.codepoints(String.trim_trailing(string))
+
     codepoints
     |> remove_and_reduce
-    |> Enum.min_by(fn ({_k, v}) -> v end)
-    |> IO.inspect
+    |> Enum.min_by(fn {_k, v} -> v end)
+    |> IO.inspect()
   end
 
   def remove_and_reduce(codepoints) do
-    Enum.reduce(?a..?z, %{}, fn (codepoint, map) ->
+    Enum.reduce(?a..?z, %{}, fn codepoint, map ->
       new_codepoints =
         codepoints
         |> Enum.reject(fn <<char::utf8>> ->
@@ -17,11 +17,10 @@ defmodule Day5 do
           diff == 0 || diff == 32
         end)
 
-      result = new_codepoints |> reduce |> Enum.count
+      result = new_codepoints |> reduce |> Enum.count()
       Map.put(map, codepoint, result)
     end)
   end
-
 
   def reduce(codepoints) do
     reduce(codepoints, [])
@@ -32,6 +31,7 @@ defmodule Day5 do
       cond do
         [] == result ->
           reduce(tail, result)
+
         [h | t] = result ->
           reduce([h | tail], t)
       end
@@ -41,7 +41,7 @@ defmodule Day5 do
   end
 
   defp reduce([head | []], result) do
-    [ head | result ]
+    [head | result]
   end
 
   defp reduce([], result) do
@@ -49,8 +49,8 @@ defmodule Day5 do
   end
 
   defp react?(char1, char2) do
-    (String.downcase(char1) == char2 || String.downcase(char2) == char1)
-    && (String.upcase(char1) == char2 || String.upcase(char2) == char1)
+    (String.downcase(char1) == char2 || String.downcase(char2) == char1) &&
+      (String.upcase(char1) == char2 || String.upcase(char2) == char1)
   end
 end
 
@@ -59,4 +59,4 @@ end
 # |> Day5.solve
 
 File.read!("input.txt")
-|> Day5.solve
+|> Day5.solve()

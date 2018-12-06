@@ -1,32 +1,34 @@
 defmodule Day4 do
-
   def solve(input) do
-    data = input
-           |> String.split("\n", trim: true)
-           |> Enum.map(&extract_guard_id/1)
-           |> Enum.sort
-           |> Enum.reduce({nil, %{}}, &accumulate_sleep_time/2)
-           |> elem(1)
+    data =
+      input
+      |> String.split("\n", trim: true)
+      |> Enum.map(&extract_guard_id/1)
+      |> Enum.sort()
+      |> Enum.reduce({nil, %{}}, &accumulate_sleep_time/2)
+      |> elem(1)
 
-    {most_sleep_id, _most_sleep_time} = data
-                                       |> Enum.reduce(%{}, &sum_sleep_time/2)
-                                       |> Enum.max_by(fn {_key, value} -> value end)
+    {most_sleep_id, _most_sleep_time} =
+      data
+      |> Enum.reduce(%{}, &sum_sleep_time/2)
+      |> Enum.max_by(fn {_key, value} -> value end)
 
-    most_sleep_minute = Map.fetch!(data, most_sleep_id)
-                        |> Enum.chunk_every(2)
-                        |> Enum.reduce(%{}, fn (list, map) ->
-                          [ start, endd | []] = list
-                          Enum.reduce((start - 1)..(endd * -1), map, fn (x, map) ->
-                            # IO.inspect(x)
-                            Map.update(map, x, 1, &(&1 + 1))
-                          end)
-                        end)
-                        |> Enum.max_by(fn ({_k, v}) -> v end)
-                        |> elem(0)
+    most_sleep_minute =
+      Map.fetch!(data, most_sleep_id)
+      |> Enum.chunk_every(2)
+      |> Enum.reduce(%{}, fn list, map ->
+        [start, endd | []] = list
 
-   String.to_integer(most_sleep_id) * most_sleep_minute
-   |> IO.inspect
+        Enum.reduce((start - 1)..(endd * -1), map, fn x, map ->
+          # IO.inspect(x)
+          Map.update(map, x, 1, &(&1 + 1))
+        end)
+      end)
+      |> Enum.max_by(fn {_k, v} -> v end)
+      |> elem(0)
 
+    (String.to_integer(most_sleep_id) * most_sleep_minute)
+    |> IO.inspect()
   end
 
   def sum_sleep_time({key, value}, acc) do
@@ -37,10 +39,11 @@ defmodule Day4 do
     id = Map.fetch!(datum, "id")
 
     if id == "" do
-      {_pop, map} = Map.get_and_update!(map, current_id, fn list ->
-        minute = Map.fetch!(datum, "minute")
-        {list, [minute | list]}
-      end)
+      {_pop, map} =
+        Map.get_and_update!(map, current_id, fn list ->
+          minute = Map.fetch!(datum, "minute")
+          {list, [minute | list]}
+        end)
 
       {current_id, map}
     else
@@ -50,15 +53,17 @@ defmodule Day4 do
   end
 
   def extract_guard_id(string) do
-    regex  = ~r/(?<datetime>\d{4}-\d{2}-\d{2} \d+:(?<minute>\d+)).*(#(?<id>\d+)|(?<status>falls|wakes))/
-      result = regex |> Regex.named_captures(string)
+    regex =
+      ~r/(?<datetime>\d{4}-\d{2}-\d{2} \d+:(?<minute>\d+)).*(#(?<id>\d+)|(?<status>falls|wakes))/
+
+    result = regex |> Regex.named_captures(string)
+
     case Map.fetch!(result, "status") do
-      "falls" -> %{ result | "minute" => String.to_integer(Map.fetch!(result, "minute")) * -1}
-      "wakes" -> %{ result | "minute" => String.to_integer(Map.fetch!(result, "minute")) }
+      "falls" -> %{result | "minute" => String.to_integer(Map.fetch!(result, "minute")) * -1}
+      "wakes" -> %{result | "minute" => String.to_integer(Map.fetch!(result, "minute"))}
       "" -> result
     end
   end
-
 end
 
 # test_case = """
@@ -82,6 +87,5 @@ end
 # """
 # Day4.solve(test_case)
 
-
 File.read!("input.txt")
-|> Day4.solve
+|> Day4.solve()
