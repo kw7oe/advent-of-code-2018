@@ -9,32 +9,30 @@ defmodule Day6 do
       coordinates
       |> find_min_and_max_coordinate
 
-    Enum.reduce(min_x..max_x, [], fn (x, acc) ->
-      Enum.reduce(min_y..max_y, acc, fn (y, acc) ->
-
+    Enum.reduce(min_x..max_x, [], fn x, acc ->
+      Enum.reduce(min_y..max_y, acc, fn y, acc ->
         area =
-          Enum.reduce(coordinates, 0, fn (c, acc) ->
+          Enum.reduce(coordinates, 0, fn c, acc ->
             distance = manhattan_distance({x, y}, c)
             acc + distance
           end)
 
         if area < safe_area do
-          [ {x, y} | acc ]
+          [{x, y} | acc]
         else
           acc
         end
       end)
     end)
-    |> Enum.count
-    |> IO.inspect
+    |> Enum.count()
+    |> IO.inspect()
   end
 
-
   defp find_min_and_max_coordinate(coordinates) do
-    min_x = Enum.min_by(coordinates, fn (c) -> elem(c, 0) end)
-    min_y = Enum.min_by(coordinates, fn (c) -> elem(c, 1) end)
-    max_x = Enum.max_by(coordinates, fn (c) -> elem(c, 0) end)
-    max_y = Enum.max_by(coordinates, fn (c) -> elem(c, 1) end)
+    min_x = Enum.min_by(coordinates, fn c -> elem(c, 0) end)
+    min_y = Enum.min_by(coordinates, fn c -> elem(c, 1) end)
+    max_x = Enum.max_by(coordinates, fn c -> elem(c, 0) end)
+    max_y = Enum.max_by(coordinates, fn c -> elem(c, 1) end)
     {elem(min_x, 0), elem(min_y, 1), elem(max_x, 0), elem(max_y, 1)}
   end
 
